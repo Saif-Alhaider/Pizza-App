@@ -158,7 +158,7 @@ fun PizzaContent(
                     )
                     state.pizzas[state.currentPizza].toppings.forEach {
                         androidx.compose.animation.AnimatedVisibility(
-                            visible = it.isActive,
+                            visible = it.isActive && !pager.isScrollInProgress,
                             enter = scaleIn(initialScale = 3f),
                             exit = fadeOut(animationSpec = tween(10))
                         ) {
@@ -323,6 +323,7 @@ fun PizzaContent(
                  * viewModel.updateScreenState(index)
                  */
                 updateCurrentPizza(index)
+
             }
     }
 }
