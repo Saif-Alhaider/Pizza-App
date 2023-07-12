@@ -1,8 +1,10 @@
 package com.example.pizzaapp.ui.screen
 
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -34,14 +36,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
@@ -59,7 +59,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pizzaapp.R
 import com.example.pizzaapp.entity.PizzaSize
 import com.example.pizzaapp.entity.Topping
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlin.math.absoluteValue
 
 val images = listOf(
     R.drawable.bread_1,
@@ -144,24 +144,26 @@ fun PizzaContent(
             )
             HorizontalPager(
                 state = pager,
-                pageCount = images.size, modifier = Modifier
+                pageCount = images.size,
+                modifier = Modifier
                     .background(Color.Transparent)
-                    .fillMaxWidth()
-            ) {
+                    .fillMaxWidth(),
+                key = { state.pizzas[it].breadImageRes }
+            ) { currentPage ->
                 updateCurrentPizza(pager.currentPage)
                 Box(
                     modifier = Modifier
                         .scale(size.value)
                 ) {
                     Image(
-                        painter = painterResource(id = images[pager.currentPage]),
+                        painter = painterResource(id = state.pizzas[currentPage].breadImageRes),
                         contentDescription = "bread",
                     )
                     state.pizzas[state.currentPizza].toppings.reversed().forEach {
                         androidx.compose.animation.AnimatedVisibility(
-                            visible = it.isActive && !pager.isScrollInProgress,
-                            enter = scaleIn(initialScale = 3f),
-                            exit = fadeOut(animationSpec = tween(10))
+                            visible = it.isActive && currentPage == pager.currentPage ,
+                            enter = scaleIn(initialScale = 1000f) + fadeIn(),
+                            exit = fadeOut()
                         ) {
                             Image(
                                 painter = painterResource(id = it.groupImageRes),
