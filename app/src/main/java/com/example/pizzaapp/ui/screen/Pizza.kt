@@ -147,14 +147,14 @@ fun PizzaContent(
                 pageCount = images.size, modifier = Modifier
                     .background(Color.Transparent)
                     .fillMaxWidth()
-            ) { currentPizzaIndex ->
+            ) {
                 updateCurrentPizza(pager.currentPage)
                 Box(
                     modifier = Modifier
                         .scale(size.value)
                 ) {
                     Image(
-                        painter = painterResource(id = images[currentPizzaIndex]),
+                        painter = painterResource(id = images[pager.currentPage]),
                         contentDescription = "bread",
                     )
                     state.pizzas[state.currentPizza].toppings.reversed().forEach {
