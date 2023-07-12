@@ -1,6 +1,7 @@
 package com.example.pizzaapp.ui.screen
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -27,11 +30,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
@@ -45,9 +51,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pizzaapp.R
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
+import com.example.pizzaapp.entity.PizzaSize
+import com.example.pizzaapp.entity.Topping
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 val images = listOf(
     R.drawable.bread_1,
@@ -57,19 +65,39 @@ val images = listOf(
     R.drawable.bread_5,
 )
 
-val lazyListItems = listOf(
-    R.drawable.basil_3,
-    R.drawable.onion_3,
-    R.drawable.broccoli_3,
-    R.drawable.mushroom_3,
-    R.drawable.sausage_3
-)
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun PizzaContent() {
+fun PizzaScreen() {
+    val viewModel: HomeViewModel = hiltViewModel()
+    val state = viewModel.state.collectAsState().value
+    PizzaContent(
+        state = state,
+        updateToppingState = viewModel::updateToppingState,
+        updatePizzaSize = viewModel::updatePizzaSize,
+        updateCurrentPizza = viewModel::updateCurrentPizza
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PizzaContent(
+    state: HomeUiState,
+    updateToppingState: (type: Topping, isActive: Boolean) -> Unit,
+    updatePizzaSize: (PizzaSize) -> Unit,
+    updateCurrentPizza: (Int) -> Unit
+) {
     val horizontalBias = remember { mutableStateOf(0f) }
-    val alignMent by animateHorizontalAlignmentAsState(horizontalBias.value)
+//    horizontalBias.value
+    val alignMent by animateHorizontalAlignmentAsState(
+        when (state.pizzas[state.currentPizza].size) {
+            is PizzaSize.Small -> -1f
+            is PizzaSize.Medium -> 0f
+            is PizzaSize.Large -> 1f
+        }
+    )
+    val pager = rememberPagerState()
+    val size = animateFloatAsState(state.pizzas[state.currentPizza].size.scale)
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -111,13 +139,16 @@ fun PizzaContent() {
                 modifier = Modifier.padding(32.dp)
             )
             HorizontalPager(
-                count = images.size, modifier = Modifier
+                state = pager,
+                pageCount = images.size, modifier = Modifier
                     .background(Color.Transparent)
-            ) {
+                    .fillMaxWidth()
+            ) { currentPizzaIndex ->
                 Image(
-                    painter = painterResource(id = images[it]),
+                    painter = painterResource(id = images[currentPizzaIndex]),
                     contentDescription = "bread",
-                    modifier = Modifier.scale(.7f)
+                    modifier = Modifier
+                        .scale(size.value)
                 )
             }
 
@@ -171,7 +202,7 @@ fun PizzaContent() {
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { horizontalBias.value = -1f }
+                        ) { updatePizzaSize(PizzaSize.Small) }
                 )
                 Text(
                     text = "M",
@@ -182,7 +213,9 @@ fun PizzaContent() {
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { horizontalBias.value = 0f }
+                        ) {
+                            updatePizzaSize(PizzaSize.Medium)
+                        }
                 )
                 Text(
                     text = "L",
@@ -193,7 +226,9 @@ fun PizzaContent() {
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { horizontalBias.value = 1f }
+                        ) {
+                            updatePizzaSize(PizzaSize.Large)
+                        }
                 )
             }
 
@@ -216,13 +251,18 @@ fun PizzaContent() {
             horizontalArrangement = Arrangement.spacedBy(40.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(lazyListItems) {
+            items(state.pizzas[state.currentPizza].toppings) { topping ->
                 Image(
-                    painter = painterResource(id = it),
+                    painter = painterResource(id = topping.imageRes),
                     contentDescription = "topping",
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(50.dp)
+                        .background(color = if (topping.isActive) Color(0xFFdaf6e0) else Color.Transparent)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { updateToppingState(topping.type, !topping.isActive) }
                 )
             }
         }
@@ -253,12 +293,27 @@ fun PizzaContent() {
         }
         //endregion
     }
+    LaunchedEffect(pager) {
+        snapshotFlow { pager.currentPage }
+            .distinctUntilChanged()
+            .collect { index ->
+                /** update your index state from here
+                 * viewModel.updateScreenState(index)
+                 */
+                updateCurrentPizza(index)
+            }
+    }
 }
 
 @Preview
 @Composable
 fun PizzaContentPreview() {
-    PizzaContent()
+    fun updateToppingState(type: Topping, isActive: Boolean) {
+    }
+
+    fun addToppings(value: Int) {
+    }
+//    PizzaContent(HomeUiState(), ::updateToppingState, addToppingsOnPizza = ::addToppings)
 }
 
 @Composable

@@ -1,18 +1,53 @@
 package com.example.pizzaapp.ui.screen
 
+import androidx.annotation.DrawableRes
+import com.example.pizzaapp.R
+import com.example.pizzaapp.entity.PizzaEntity
+import com.example.pizzaapp.entity.PizzaSize
+import com.example.pizzaapp.entity.Topping
+import com.example.pizzaapp.entity.ToppingEntity
+
 data class HomeUiState(
-    val pizzas: List<PizzaUiState> = emptyList()
+    val pizzas: List<PizzaUiState> = emptyList(),
+    val currentPizza:Int = 0,
 ) {
     data class PizzaUiState(
-        val toppings: List<Toppings> = emptyList(),
-        val size: PizzaSize = PizzaSize.MEDIUM,
+        @DrawableRes val breadImageRes: Int = R.drawable.bread_1,
+        val toppings: List<ToppingUiState> = emptyList(),
+        val size: PizzaSize = PizzaSize.Medium,
     )
 
-    enum class Toppings {
-        BASIL, BROCCOLI, MUSHROOM, ONION, SAUSAGE
-    }
+    data class ToppingUiState(
+        @DrawableRes val imageRes: Int,
+        val type: Topping,
+        val isActive: Boolean = false
+    )
+}
 
-    enum class PizzaSize {
-        SMALL, MEDIUM, LARGE
+fun List<PizzaEntity>.mapPizzaToUi(): List<HomeUiState.PizzaUiState> {
+    return map {
+        HomeUiState.PizzaUiState(
+            breadImageRes = it.breadImageRes,
+            toppings = it.toppings.mapToppingToUi(),
+            size = it.size
+        )
     }
+}
+
+
+
+fun List<ToppingEntity>.mapToppingToUi(): List<HomeUiState.ToppingUiState> {
+    return map {
+        HomeUiState.ToppingUiState(
+            imageRes = it.imageRes,
+            type = it.type
+        )
+    }
+}
+
+fun ToppingEntity.mapToppingToUi():HomeUiState.ToppingUiState{
+    return HomeUiState.ToppingUiState(
+        imageRes = this.imageRes,
+        type = this.type
+    )
 }
