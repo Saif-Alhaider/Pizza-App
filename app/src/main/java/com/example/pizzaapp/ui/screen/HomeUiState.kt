@@ -9,7 +9,7 @@ import com.example.pizzaapp.entity.ToppingEntity
 
 data class HomeUiState(
     val pizzas: List<PizzaUiState> = emptyList(),
-    val currentPizza:Int = 0,
+    val currentPizza: Int = 0,
 ) {
     data class PizzaUiState(
         @DrawableRes val breadImageRes: Int = R.drawable.bread_1,
@@ -18,7 +18,8 @@ data class HomeUiState(
     )
 
     data class ToppingUiState(
-        @DrawableRes val imageRes: Int,
+        @DrawableRes val singleItemImageRes: Int,
+        @DrawableRes val groupImageRes: Int,
         val type: Topping,
         val isActive: Boolean = false
     )
@@ -35,19 +36,12 @@ fun List<PizzaEntity>.mapPizzaToUi(): List<HomeUiState.PizzaUiState> {
 }
 
 
-
 fun List<ToppingEntity>.mapToppingToUi(): List<HomeUiState.ToppingUiState> {
     return map {
         HomeUiState.ToppingUiState(
-            imageRes = it.imageRes,
+            singleItemImageRes = it.singleItemImageRes,
+            groupImageRes = it.groupImageRes,
             type = it.type
         )
     }
-}
-
-fun ToppingEntity.mapToppingToUi():HomeUiState.ToppingUiState{
-    return HomeUiState.ToppingUiState(
-        imageRes = this.imageRes,
-        type = this.type
-    )
 }

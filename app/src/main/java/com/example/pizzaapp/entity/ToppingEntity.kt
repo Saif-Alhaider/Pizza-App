@@ -3,7 +3,8 @@ package com.example.pizzaapp.entity
 import androidx.annotation.DrawableRes
 
 data class ToppingEntity(
-    @DrawableRes val imageRes: Int,
+    @DrawableRes val singleItemImageRes: Int,
+    @DrawableRes val groupImageRes:Int,
     val type: Topping,
 )
 

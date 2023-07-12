@@ -11,23 +11,28 @@ class PizzaDataSource @Inject constructor(private val resourcesProvider: Resourc
     val toppings =
         listOf(
             ToppingEntity(
-                imageRes = resourcesProvider.getDrawable(R.drawable.basil_3),
+                singleItemImageRes = resourcesProvider.getDrawable(R.drawable.basil_3),
+                groupImageRes = resourcesProvider.getDrawable(R.drawable.group_basil),
                 type = Topping.BASIL,
             ),
             ToppingEntity(
-                imageRes = resourcesProvider.getDrawable(R.drawable.onion_3),
+                singleItemImageRes = resourcesProvider.getDrawable(R.drawable.onion_3),
+                groupImageRes = resourcesProvider.getDrawable(R.drawable.group_onion),
                 type = Topping.ONION,
             ),
             ToppingEntity(
-                imageRes = resourcesProvider.getDrawable(R.drawable.broccoli_3),
+                singleItemImageRes = resourcesProvider.getDrawable(R.drawable.broccoli_3),
+                groupImageRes = resourcesProvider.getDrawable(R.drawable.group_broccoli),
                 type = Topping.BROCCOLI,
             ),
             ToppingEntity(
-                imageRes = resourcesProvider.getDrawable(R.drawable.mushroom_3),
+                singleItemImageRes = resourcesProvider.getDrawable(R.drawable.mushroom_3),
+                groupImageRes = resourcesProvider.getDrawable(R.drawable.group_mushroom),
                 type = Topping.MUSHROOM,
             ),
             ToppingEntity(
-                imageRes = resourcesProvider.getDrawable(R.drawable.sausage_3),
+                singleItemImageRes = resourcesProvider.getDrawable(R.drawable.sausage_3),
+                groupImageRes = resourcesProvider.getDrawable(R.drawable.group_sausage),
                 type = Topping.SAUSAGE,
             ),
         )

@@ -1,6 +1,10 @@
 package com.example.pizzaapp.ui.screen
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -78,7 +82,7 @@ fun PizzaScreen() {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun PizzaContent(
     state: HomeUiState,
@@ -86,8 +90,6 @@ fun PizzaContent(
     updatePizzaSize: (PizzaSize) -> Unit,
     updateCurrentPizza: (Int) -> Unit
 ) {
-    val horizontalBias = remember { mutableStateOf(0f) }
-//    horizontalBias.value
     val alignMent by animateHorizontalAlignmentAsState(
         when (state.pizzas[state.currentPizza].size) {
             is PizzaSize.Small -> -1f
@@ -97,7 +99,9 @@ fun PizzaContent(
     )
     val pager = rememberPagerState()
     val size = animateFloatAsState(state.pizzas[state.currentPizza].size.scale)
-
+    val showImage = remember {
+        mutableStateOf(false)
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -144,12 +148,27 @@ fun PizzaContent(
                     .background(Color.Transparent)
                     .fillMaxWidth()
             ) { currentPizzaIndex ->
-                Image(
-                    painter = painterResource(id = images[currentPizzaIndex]),
-                    contentDescription = "bread",
+                Box(
                     modifier = Modifier
                         .scale(size.value)
-                )
+                ) {
+                    Image(
+                        painter = painterResource(id = images[currentPizzaIndex]),
+                        contentDescription = "bread",
+                    )
+                    state.pizzas[state.currentPizza].toppings.forEach {
+                        androidx.compose.animation.AnimatedVisibility(
+                            visible = it.isActive,
+                            enter = scaleIn(initialScale = 3f),
+                            exit = fadeOut(animationSpec = tween(10))
+                        ) {
+                            Image(
+                                painter = painterResource(id = it.groupImageRes),
+                                contentDescription = null,
+                            )
+                        }
+                    }
+                }
             }
 
         }
@@ -253,7 +272,7 @@ fun PizzaContent(
         ) {
             items(state.pizzas[state.currentPizza].toppings) { topping ->
                 Image(
-                    painter = painterResource(id = topping.imageRes),
+                    painter = painterResource(id = topping.singleItemImageRes),
                     contentDescription = "topping",
                     modifier = Modifier
                         .clip(CircleShape)
@@ -262,7 +281,10 @@ fun PizzaContent(
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { updateToppingState(topping.type, !topping.isActive) }
+                        ) {
+                            updateToppingState(topping.type, !topping.isActive)
+                            showImage.value = !showImage.value
+                        }
                 )
             }
         }
@@ -311,9 +333,9 @@ fun PizzaContentPreview() {
     fun updateToppingState(type: Topping, isActive: Boolean) {
     }
 
-    fun addToppings(value: Int) {
-    }
-//    PizzaContent(HomeUiState(), ::updateToppingState, addToppingsOnPizza = ::addToppings)
+    PizzaContent(HomeUiState(
+        pizzas = listOf(HomeUiState.PizzaUiState(breadImageRes = R.drawable.bread_1))
+    ), ::updateToppingState, updatePizzaSize = { PizzaSize.Medium }, updateCurrentPizza = {})
 }
 
 @Composable
