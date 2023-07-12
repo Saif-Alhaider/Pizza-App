@@ -92,8 +92,8 @@ fun PizzaContent() {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .fillMaxHeight(.4f)
-                .fillMaxWidth()
+                .fillMaxHeight(.5f)
+                .fillMaxWidth().padding(16.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.plate),
