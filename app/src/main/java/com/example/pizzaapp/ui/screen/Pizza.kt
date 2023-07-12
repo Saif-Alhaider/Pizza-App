@@ -1,7 +1,10 @@
 package com.example.pizzaapp.ui.screen
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +27,13 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -59,7 +68,8 @@ val lazyListItems = listOf(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun PizzaContent() {
-
+    val horizontalBias = remember { mutableStateOf(0f) }
+    val alignMent by animateHorizontalAlignmentAsState(horizontalBias.value)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -93,12 +103,12 @@ fun PizzaContent() {
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxHeight(.5f)
-                .fillMaxWidth().padding(16.dp)
+                .fillMaxWidth()
         ) {
             Image(
                 painter = painterResource(id = R.drawable.plate),
                 contentDescription = "plate",
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(32.dp)
             )
             HorizontalPager(
                 count = images.size, modifier = Modifier
@@ -141,7 +151,7 @@ fun PizzaContent() {
                         shape = CircleShape,
                         ambientColor = Color.Black.copy(alpha = .2f)
                     )
-                    .align(Alignment.Center)
+                    .align(alignMent)
             ) {
 
             }
@@ -156,19 +166,34 @@ fun PizzaContent() {
                     text = "S",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { horizontalBias.value = -1f }
                 )
                 Text(
                     text = "M",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { horizontalBias.value = 0f }
                 )
                 Text(
                     text = "L",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { horizontalBias.value = 1f }
                 )
             }
 
@@ -234,4 +259,12 @@ fun PizzaContent() {
 @Composable
 fun PizzaContentPreview() {
     PizzaContent()
+}
+
+@Composable
+private fun animateHorizontalAlignmentAsState(
+    targetBiasValue: Float
+): State<BiasAlignment> {
+    val bias by animateFloatAsState(targetBiasValue)
+    return remember { derivedStateOf { BiasAlignment(horizontalBias = bias, verticalBias = 0f) } }
 }
