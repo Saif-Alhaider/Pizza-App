@@ -148,6 +148,7 @@ fun PizzaContent(
                     .background(Color.Transparent)
                     .fillMaxWidth()
             ) { currentPizzaIndex ->
+                updateCurrentPizza(pager.currentPage)
                 Box(
                     modifier = Modifier
                         .scale(size.value)
@@ -315,13 +316,7 @@ fun PizzaContent(
         }
         //endregion
     }
-    LaunchedEffect(pager) {
-        snapshotFlow { pager.currentPage }
-            .distinctUntilChanged()
-            .collect { index ->
-                updateCurrentPizza(index)
-            }
-    }
+
 }
 
 @Preview
