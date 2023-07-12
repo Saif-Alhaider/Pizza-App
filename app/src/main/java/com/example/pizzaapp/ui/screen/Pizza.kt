@@ -156,7 +156,7 @@ fun PizzaContent(
                         painter = painterResource(id = images[currentPizzaIndex]),
                         contentDescription = "bread",
                     )
-                    state.pizzas[state.currentPizza].toppings.forEach {
+                    state.pizzas[state.currentPizza].toppings.reversed().forEach {
                         androidx.compose.animation.AnimatedVisibility(
                             visible = it.isActive && !pager.isScrollInProgress,
                             enter = scaleIn(initialScale = 3f),
@@ -319,11 +319,7 @@ fun PizzaContent(
         snapshotFlow { pager.currentPage }
             .distinctUntilChanged()
             .collect { index ->
-                /** update your index state from here
-                 * viewModel.updateScreenState(index)
-                 */
                 updateCurrentPizza(index)
-
             }
     }
 }
