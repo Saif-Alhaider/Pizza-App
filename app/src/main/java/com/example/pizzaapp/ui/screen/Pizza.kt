@@ -154,6 +154,7 @@ fun PizzaContent(
                                 Image(
                                     painter = painterResource(id = it.groupImageRes),
                                     contentDescription = null,
+                                    modifier = Modifier.padding(16.dp)
                                 )
                             }
                         }
@@ -162,6 +163,7 @@ fun PizzaContent(
                             Image(
                                 painter = painterResource(id = it.groupImageRes),
                                 contentDescription = null,
+                                modifier = Modifier.padding(16.dp)
                             )
                         }
                     }
