@@ -9,7 +9,7 @@ import com.example.pizzaapp.entity.ToppingEntity
 
 data class HomeUiState(
     val pizzas: List<PizzaUiState> = emptyList(),
-    val currentPizza: Int = 0,
+    val currentPizzaIndex: Int = 0,
 ) {
     data class PizzaUiState(
         @DrawableRes val breadImageRes: Int = R.drawable.bread_1,

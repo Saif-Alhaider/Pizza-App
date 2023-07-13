@@ -1,9 +1,7 @@
 package com.example.pizzaapp.ui.screen
 
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -40,7 +38,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
@@ -59,16 +56,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.pizzaapp.R
 import com.example.pizzaapp.entity.PizzaSize
 import com.example.pizzaapp.entity.Topping
-import kotlin.math.absoluteValue
-
-val images = listOf(
-    R.drawable.bread_1,
-    R.drawable.bread_2,
-    R.drawable.bread_3,
-    R.drawable.bread_4,
-    R.drawable.bread_5,
-)
-
 
 @Composable
 fun PizzaScreen() {
@@ -90,18 +77,16 @@ fun PizzaContent(
     updatePizzaSize: (PizzaSize) -> Unit,
     updateCurrentPizza: (Int) -> Unit
 ) {
-    val alignMent by animateHorizontalAlignmentAsState(
-        when (state.pizzas[state.currentPizza].size) {
+    val sizeCircleAlighnment by animateHorizontalAlignmentAsState(
+        when (state.pizzas[state.currentPizzaIndex].size) {
             is PizzaSize.Small -> -1f
             is PizzaSize.Medium -> 0f
             is PizzaSize.Large -> 1f
         }
     )
     val pager = rememberPagerState()
-    val size = animateFloatAsState(state.pizzas[state.currentPizza].size.scale)
-    val showImage = remember {
-        mutableStateOf(false)
-    }
+    val size = animateFloatAsState(state.pizzas[state.currentPizzaIndex].size.scale)
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -144,7 +129,7 @@ fun PizzaContent(
             )
             HorizontalPager(
                 state = pager,
-                pageCount = images.size,
+                pageCount = state.pizzas.size,
                 modifier = Modifier
                     .background(Color.Transparent)
                     .fillMaxWidth(),
@@ -160,7 +145,7 @@ fun PizzaContent(
                         contentDescription = "bread",
                     )
                     if (!pager.isScrollInProgress){
-                        state.pizzas[state.currentPizza].toppings.reversed().forEach {
+                        state.pizzas[state.currentPizzaIndex].toppings.reversed().forEach {
                             androidx.compose.animation.AnimatedVisibility(
                                 visible = it.isActive && currentPage == pager.currentPage ,
                                 enter = scaleIn(initialScale = 1000f) + fadeIn(),
@@ -213,7 +198,7 @@ fun PizzaContent(
                         shape = CircleShape,
                         ambientColor = Color.Black.copy(alpha = .2f)
                     )
-                    .align(alignMent)
+                    .align(sizeCircleAlighnment)
             ) {
 
             }
@@ -282,7 +267,7 @@ fun PizzaContent(
             horizontalArrangement = Arrangement.spacedBy(40.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(state.pizzas[state.currentPizza].toppings) { topping ->
+            items(state.pizzas[state.currentPizzaIndex].toppings) { topping ->
                 Image(
                     painter = painterResource(id = topping.singleItemImageRes),
                     contentDescription = "topping",
@@ -295,7 +280,6 @@ fun PizzaContent(
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
                             updateToppingState(topping.type, !topping.isActive)
-                            showImage.value = !showImage.value
                         }
                 )
             }
