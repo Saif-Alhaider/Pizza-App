@@ -159,12 +159,21 @@ fun PizzaContent(
                         painter = painterResource(id = state.pizzas[currentPage].breadImageRes),
                         contentDescription = "bread",
                     )
-                    state.pizzas[state.currentPizza].toppings.reversed().forEach {
-                        androidx.compose.animation.AnimatedVisibility(
-                            visible = it.isActive && currentPage == pager.currentPage ,
-                            enter = scaleIn(initialScale = 1000f) + fadeIn(),
-                            exit = fadeOut()
-                        ) {
+                    if (!pager.isScrollInProgress){
+                        state.pizzas[state.currentPizza].toppings.reversed().forEach {
+                            androidx.compose.animation.AnimatedVisibility(
+                                visible = it.isActive && currentPage == pager.currentPage ,
+                                enter = scaleIn(initialScale = 1000f) + fadeIn(),
+                                exit = fadeOut()
+                            ) {
+                                Image(
+                                    painter = painterResource(id = it.groupImageRes),
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+                    }else{
+                        state.pizzas[currentPage].toppings.reversed().filter { it.isActive }.forEach {
                             Image(
                                 painter = painterResource(id = it.groupImageRes),
                                 contentDescription = null,
