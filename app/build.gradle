@@ -61,6 +61,7 @@ dependencies {
     implementation 'androidx.compose.material3:material3'
     def accompanist_version = "0.28.0"
     implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
     //navigation
     implementation "androidx.navigation:navigation-common:2.6.0"
     //hilt
