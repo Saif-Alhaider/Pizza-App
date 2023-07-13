@@ -148,7 +148,7 @@ fun PizzaContent(
                         state.pizzas[state.currentPizzaIndex].toppings.reversed().forEach {
                             androidx.compose.animation.AnimatedVisibility(
                                 visible = it.isActive && currentPage == pager.currentPage ,
-                                enter = scaleIn(initialScale = 1000f) + fadeIn(),
+                                enter = scaleIn(initialScale = 2f) + fadeIn(),
                                 exit = fadeOut()
                             ) {
                                 Image(
