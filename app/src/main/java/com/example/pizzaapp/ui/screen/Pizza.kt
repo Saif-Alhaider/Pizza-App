@@ -77,7 +77,7 @@ fun PizzaContent(
     updatePizzaSize: (PizzaSize) -> Unit,
     updateCurrentPizza: (Int) -> Unit
 ) {
-    val sizeCircleAlighnment by animateHorizontalAlignmentAsState(
+    val sizeCircleAlignment by animateHorizontalAlignmentAsState(
         when (state.pizzas[state.currentPizzaIndex].size) {
             is PizzaSize.Small -> -1f
             is PizzaSize.Medium -> 0f
@@ -200,7 +200,7 @@ fun PizzaContent(
                         shape = CircleShape,
                         ambientColor = Color.Black.copy(alpha = .2f)
                     )
-                    .align(sizeCircleAlighnment)
+                    .align(sizeCircleAlignment)
             ) {
 
             }
