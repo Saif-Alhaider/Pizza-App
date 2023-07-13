@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updateCurrentPizza(currentPizzaIndex: Int) {
-        _state.update { it.copy(currentPizza = currentPizzaIndex) }
+        _state.update { it.copy(currentPizzaIndex = currentPizzaIndex) }
     }
 
     private fun getPizzaToppings() {
@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
         _state.update {
             it.copy(
                 pizzas = it.pizzas.mapIndexed { index, pizza ->
-                    if (index == _state.value.currentPizza) {
+                    if (index == _state.value.currentPizzaIndex) {
                         pizza.copy(toppings = pizza.toppings.map { topping ->
                             if (topping.type == type) {
                                 topping.copy(isActive = isActive)
@@ -63,7 +63,7 @@ class HomeViewModel @Inject constructor(
     fun updatePizzaSize(pizzaSize: PizzaSize) {
         _state.update {
             it.copy(pizzas = it.pizzas.mapIndexed { index, pizza ->
-                if (index == _state.value.currentPizza) {
+                if (index == _state.value.currentPizzaIndex) {
                     pizza.copy(size = pizzaSize)
                 } else {
                     pizza
