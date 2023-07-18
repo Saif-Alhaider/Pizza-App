@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -91,7 +92,7 @@ fun PizzaContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         //region header
         Row(
@@ -104,12 +105,19 @@ fun PizzaContent(
             Image(
                 painter = painterResource(id = R.drawable.ic_back),
                 contentDescription = "back icon",
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                 modifier = Modifier.size(24.dp)
             )
-            Text(text = "Pizza", fontSize = 24.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = "Pizza",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
             Image(
                 painter = painterResource(id = R.drawable.ic_heart),
                 contentDescription = "heart icon",
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -144,10 +152,10 @@ fun PizzaContent(
                         painter = painterResource(id = state.pizzas[currentPage].breadImageRes),
                         contentDescription = "bread",
                     )
-                    if (!pager.isScrollInProgress){
+                    if (!pager.isScrollInProgress) {
                         state.pizzas[state.currentPizzaIndex].toppings.reversed().forEach {
                             androidx.compose.animation.AnimatedVisibility(
-                                visible = it.isActive && currentPage == pager.currentPage ,
+                                visible = it.isActive && currentPage == pager.currentPage,
                                 enter = scaleIn(initialScale = 2f) + fadeIn(),
                                 exit = fadeOut()
                             ) {
@@ -158,14 +166,15 @@ fun PizzaContent(
                                 )
                             }
                         }
-                    }else{
-                        state.pizzas[currentPage].toppings.reversed().filter { it.isActive }.forEach {
-                            Image(
-                                painter = painterResource(id = it.groupImageRes),
-                                contentDescription = null,
-                                modifier = Modifier.padding(16.dp)
-                            )
-                        }
+                    } else {
+                        state.pizzas[currentPage].toppings.reversed().filter { it.isActive }
+                            .forEach {
+                                Image(
+                                    painter = painterResource(id = it.groupImageRes),
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(16.dp)
+                                )
+                            }
                     }
                 }
             }
@@ -178,6 +187,7 @@ fun PizzaContent(
             text = "17$",
             fontSize = 32.sp,
             fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(top = 8.dp)
         )
         //endregion
@@ -193,7 +203,7 @@ fun PizzaContent(
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .background(color = Color.White)
+                    .background(color = MaterialTheme.colorScheme.background)
                     .padding(4.dp)
                     .shadow(
                         elevation = 4.dp,
@@ -220,7 +230,8 @@ fun PizzaContent(
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { updatePizzaSize(PizzaSize.Small) }
+                        ) { updatePizzaSize(PizzaSize.Small) },
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "M",
@@ -233,7 +244,8 @@ fun PizzaContent(
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
                             updatePizzaSize(PizzaSize.Medium)
-                        }
+                        },
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text = "L",
@@ -246,7 +258,8 @@ fun PizzaContent(
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
                             updatePizzaSize(PizzaSize.Large)
-                        }
+                        },
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -256,7 +269,7 @@ fun PizzaContent(
         //region pizza toppings
         Text(
             text = "CUSTOMIZ YOUR PIZZA",
-            color = Color.Black.copy(alpha = .6f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f),
             modifier = Modifier
                 .padding(top = 24.dp, start = 16.dp)
                 .align(Alignment.Start)
@@ -306,6 +319,7 @@ fun PizzaContent(
                     Text(
                         text = "Add to Cart",
                         fontSize = 24.sp,
+                        color = Color.White,
                         modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
                     )
                 }
