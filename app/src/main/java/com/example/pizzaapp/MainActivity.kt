@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PizzaAppTheme {
                 val systemUiController = rememberSystemUiController()
-                systemUiController.setStatusBarColor(color = Color.White)
+                systemUiController.setStatusBarColor(color = MaterialTheme.colorScheme.background)
                 PizzaScreen()
             }
         }
